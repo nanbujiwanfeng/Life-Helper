@@ -1,32 +1,37 @@
 package com.example.lifehelper.network
 
-import com.google.gson.annotations.SerializedName
-import retrofit2.http.GET
-import retrofit2.http.Query
+import retrofit2.http.Body
+import retrofit2.http.POST
 
 /**
- * 免费翻译 API 接口（默认使用 MyMemory，无需密钥）
+ * DeepSeek 翻译接口（OpenAI 兼容的 chat/completions 端点）
  *
- * 如希望替换为其他翻译服务（如需要密钥的 Google/DeepL 等），
- * 请参考 TranslationService.kt 中的 TODO 说明。
+ * 通过对话方式实现翻译：system 指定翻译规则，user 携带待翻译文本。
  */
 interface TranslationApi {
 
-    @GET("get")
-    suspend fun translate(
-        @Query("q") text: String,
-        @Query("langpair") langPair: String
-    ): TranslationResponse
+    @POST("chat/completions")
+    suspend fun chat(@Body request: ChatRequest): ChatResponse
 }
 
-/** MyMemory API 响应体 */
-data class TranslationResponse(
-    @SerializedName("responseStatus") val status: Int? = null,
-    @SerializedName("responseData") val data: ResponseData? = null
-) {
-    val isOk: Boolean get() = (status ?: 0) == 200
-}
+/** 对话请求体 */
+data class ChatRequest(
+    val model: String = "deepseek-chat",
+    val messages: List<ChatMessage>,
+    val temperature: Double = 0.3,
+    val stream: Boolean = false
+)
 
-data class ResponseData(
-    @SerializedName("translatedText") val translatedText: String? = null
+data class ChatMessage(
+    val role: String,
+    val content: String
+)
+
+/** 对话响应体 */
+data class ChatResponse(
+    val choices: List<ChatChoice>? = null
+)
+
+data class ChatChoice(
+    val message: ChatMessage? = null
 )

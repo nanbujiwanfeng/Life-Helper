@@ -23,7 +23,7 @@
 | 学习目标 | 创建/编辑/删除目标，标题、描述、截止日期、进度、优先级；按状态筛选；今日关注（临近截止/逾期标红） |
 | 课程表 | 周视图，7 天多节课；名称、地点、教师、起止时间、周次（单/双周）；冲突检测；课前提醒 |
 | 记账本 | 收/支录入，分类、日期、备注；月度汇总、分类饼图；月预算与超支提醒 |
-| 语言翻译 | 多语言互译（MyMemory 免费 API）；源/目标语言选择；历史记录本地保存 |
+| 语言翻译 | 多语言互译（DeepSeek API）；源/目标语言选择；历史记录本地保存 |
 | 我的 | 头像/昵称/签名编辑；通知开关、深色/浅色/跟随系统、界面语言；JSON 备份/恢复、CSV 导出；清除数据（二次确认） |
 
 ---
@@ -59,16 +59,26 @@
 
 ## 配置翻译 API
 
-翻译功能默认使用 **MyMemory 免费 API**，**无需密钥**，开箱即用：
+翻译功能使用 **DeepSeek API**（OpenAI 兼容的 `chat/completions` 端点），通过对话方式实现多语言互译。
 
-- 接口：`https://api.mymemory.translated.net/get?q={text}&langpair={源}|{目标}`
-- 代码位置：`app/src/main/java/com/example/lifehelper/network/TranslationService.kt`
+### 配置密钥（必读）
 
-如需替换为需要密钥的服务（如 Google、DeepL、百度翻译等），请：
+密钥**不写进源码**，而是放在项目根目录的 `secrets.properties`（已加入 `.gitignore`，不会被提交）：
 
-1. 在 `TranslationService.kt` 的 `TODO` 处填入密钥常量（**切勿提交真实密钥到仓库**）。
-2. 修改 `TranslationApi` 接口与 `TranslationService` 的 `baseUrl`、请求参数以匹配目标服务。
-3. 相应调整 `TranslationResponse` / `ResponseData` 的字段映射。
+```properties
+DEEPSEEK_API_KEY=你的密钥
+```
+
+Gradle 会读取该文件并注入到 `BuildConfig.DEEPSEEK_API_KEY`，`TranslationService` 运行时通过 `Authorization: Bearer <key>` 调用。
+
+- 代码位置：`app/src/main/java/com/example/lifehelper/network/TranslationService.kt`（请求/响应体在 `TranslationApi.kt`）
+- **切勿把 `secrets.properties` 提交到仓库**；如需分享，请让使用者自行申请密钥后填入自己的 `secrets.properties`。
+
+### 相关说明
+
+- 模型默认 `deepseek-chat`，在 `ChatRequest` 中可调整。
+- 若未配置密钥，翻译页会提示「未配置 DeepSeek API 密钥」，不会发起请求。
+- 如需换回无需密钥的服务，可参考旧提交中 MyMemory 的实现。
 
 ---
 

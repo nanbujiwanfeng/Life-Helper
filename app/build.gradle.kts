@@ -1,9 +1,19 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("com.google.devtools.ksp")
 }
+
+// 从本地 secrets.properties 读取密钥（该文件已加入 .gitignore，不会被提交到仓库）
+val secretsFile = rootProject.file("secrets.properties")
+val secrets = Properties()
+if (secretsFile.exists()) {
+    secretsFile.inputStream().use { secrets.load(it) }
+}
+val deepseekApiKey = secrets.getProperty("DEEPSEEK_API_KEY", "")
 
 android {
     namespace = "com.example.lifehelper"
@@ -20,6 +30,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // DeepSeek API 密钥（从 secrets.properties 注入；未配置时为空字符串）
+        buildConfigField("String", "DEEPSEEK_API_KEY", "\"$deepseekApiKey\"")
     }
 
     buildTypes {
@@ -43,6 +56,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     packaging {

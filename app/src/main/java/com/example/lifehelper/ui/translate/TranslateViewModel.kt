@@ -76,11 +76,15 @@ class TranslateViewModel(
         _isTranslating.value = true
         _error.value = null
         try {
-            val source = if (_sourceLang.value == "auto") "Autodetect" else _sourceLang.value
-            val langPair = "$source|${_targetLang.value}"
-            val response = api.translate(text, langPair)
-            val result = response.data?.translatedText
-            if (response.isOk && result != null && result.isNotBlank()) {
+            if (!TranslationService.isConfigured) {
+                _error.value = "未配置 DeepSeek API 密钥（见 secrets.properties）"
+                return@launch
+            }
+            val response = api.chat(
+                TranslationService.buildRequest(_sourceLang.value, _targetLang.value, text)
+            )
+            val result = response.choices?.firstOrNull()?.message?.content?.trim()
+            if (!result.isNullOrBlank()) {
                 _outputText.value = result
                 repository.addRecord(
                     TranslationRecord(
@@ -94,7 +98,7 @@ class TranslateViewModel(
                 _error.value = "翻译失败，请稍后重试"
             }
         } catch (e: Exception) {
-            _error.value = "网络错误，请检查网络连接"
+            _error.value = "翻译失败，请检查网络或 API 密钥是否正确"
         } finally {
             _isTranslating.value = false
         }
