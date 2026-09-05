@@ -2,6 +2,8 @@ package com.example.lifehelper.ui.course
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -147,6 +149,7 @@ fun CourseScreen(viewModel: CourseViewModel = viewModel(factory = CourseViewMode
 
 @Composable
 private fun DaySelector(selectedDay: Int, onSelect: (Int) -> Unit) {
+    val today = remember { CourseViewModel.todayDayOfWeek() }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -167,7 +170,12 @@ private fun DaySelector(selectedDay: Int, onSelect: (Int) -> Unit) {
             FilterChip(
                 selected = selectedDay == day,
                 onClick = { onSelect(day) },
-                label = { Text(stringResource(labelRes)) }
+                label = {
+                    Text(
+                        if (day == today) "${stringResource(labelRes)}·今"
+                        else stringResource(labelRes)
+                    )
+                }
             )
         }
     }
@@ -224,6 +232,7 @@ private fun CourseCard(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun CourseEditDialog(
     course: Course?,
@@ -277,8 +286,8 @@ private fun CourseEditDialog(
                 }
                 Spacer(Modifier.height(8.dp))
                 Text(stringResource(R.string.course_field_day), style = MaterialTheme.typography.labelLarge)
-                Row(
-                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     for (d in 1..7) {

@@ -3,6 +3,8 @@ package com.example.lifehelper.ui.transaction
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -341,7 +343,7 @@ private fun TransactionRow(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun TransactionEditDialog(
     transaction: Transaction?,
@@ -391,7 +393,7 @@ private fun TransactionEditDialog(
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(stringResource(R.string.transaction_category), style = MaterialTheme.typography.labelLarge)
-                Row(
+                FlowRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {

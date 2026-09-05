@@ -105,6 +105,8 @@
     <string name="translate_input_hint">请输入要翻译的文本</string>
     <string name="translate_button">翻译</string>
     <string name="translate_result">翻译结果</string>
+    <string name="translate_copy">复制</string>
+    <string name="copied">已复制到剪贴板</string>
     <string name="translate_history">翻译历史</string>
     <string name="translate_swap">交换语言</string>
     <string name="translate_error">翻译失败，请检查网络后重试</string>

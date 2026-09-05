@@ -45,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -248,6 +249,7 @@ private fun GoalCard(
                     text = goal.title,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.weight(1f),
+                    textDecoration = if (goal.isCompleted) TextDecoration.LineThrough else null,
                     color = if (goal.isCompleted) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                     else MaterialTheme.colorScheme.onSurface
                 )

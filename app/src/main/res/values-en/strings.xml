@@ -87,6 +87,8 @@
     <string name="translate_input_hint">Enter text to translate</string>
     <string name="translate_button">Translate</string>
     <string name="translate_result">Result</string>
+    <string name="translate_copy">Copy</string>
+    <string name="copied">Copied to clipboard</string>
     <string name="translate_history">History</string>
     <string name="translate_swap">Swap languages</string>
     <string name="translate_error">Translation failed, check network</string>
