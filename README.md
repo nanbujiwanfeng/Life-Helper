@@ -138,5 +138,6 @@ app/src/main/java/com/example/lifehelper/
 
 ## 开源许可
 
-- 本项目代码采用 MIT 许可（仓库链接为占位符，请替换为你的 GitHub/Gitee 地址）。
+- 本项目代码采用 MIT 许可。
+- 仓库地址：https://github.com/nanbujiwanfeng/Life-Helper
 - 依赖库版权归各自所有者所有。

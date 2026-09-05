@@ -124,7 +124,7 @@
     <string name="profile_version">版本号</string>
     <string name="profile_version_value">1.0.0</string>
     <string name="profile_repo">开源仓库</string>
-    <string name="profile_repo_url">https://github.com/yourname/lifehelper</string>
+    <string name="profile_repo_url">https://github.com/nanbujiwanfeng/Life-Helper</string>
     <string name="profile_license">本项目采用 MIT 开源许可</string>
     <string name="profile_theme_light">浅色</string>
     <string name="profile_theme_dark">深色</string>
