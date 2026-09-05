@@ -63,16 +63,33 @@
 
 ### 配置密钥（必读）
 
-密钥**不写进源码**，而是放在项目根目录的 `secrets.properties`（已加入 `.gitignore`，不会被提交）：
+密钥**不写进源码**。clone 后任选下面一种方式配置（均不会被提交到仓库）：
+
+**方式一（推荐）：复制模板**
+
+```bash
+cp secrets.properties.example secrets.properties
+# 编辑 secrets.properties，填入你的密钥
+```
 
 ```properties
 DEEPSEEK_API_KEY=你的密钥
 ```
 
-Gradle 会读取该文件并注入到 `BuildConfig.DEEPSEEK_API_KEY`，`TranslationService` 运行时通过 `Authorization: Bearer <key>` 调用。
+**方式二**：直接在你的 `local.properties`（Android Studio 自动生成，已 gitignore）里加一行：
+
+```properties
+DEEPSEEK_API_KEY=你的密钥
+```
+
+**方式三**：设置环境变量 `DEEPSEEK_API_KEY`。
+
+> 读取优先级：`secrets.properties` > `local.properties` > 环境变量 `DEEPSEEK_API_KEY`。
+
+Gradle 会把密钥注入 `BuildConfig.DEEPSEEK_API_KEY`，`TranslationService` 运行时通过 `Authorization: Bearer <key>` 调用。
 
 - 代码位置：`app/src/main/java/com/example/lifehelper/network/TranslationService.kt`（请求/响应体在 `TranslationApi.kt`）
-- **切勿把 `secrets.properties` 提交到仓库**；如需分享，请让使用者自行申请密钥后填入自己的 `secrets.properties`。
+- **切勿把真实密钥提交到仓库**；仓库里只有不含密钥的 `secrets.properties.example` 模板。
 
 ### 相关说明
 

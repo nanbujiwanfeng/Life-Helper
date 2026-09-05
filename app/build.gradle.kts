@@ -7,13 +7,20 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
-// 从本地 secrets.properties 读取密钥（该文件已加入 .gitignore，不会被提交到仓库）
-val secretsFile = rootProject.file("secrets.properties")
-val secrets = Properties()
-if (secretsFile.exists()) {
-    secretsFile.inputStream().use { secrets.load(it) }
-}
-val deepseekApiKey = secrets.getProperty("DEEPSEEK_API_KEY", "")
+// 读取 DeepSeek 密钥，优先级：secrets.properties > local.properties > 环境变量 DEEPSEEK_API_KEY
+// 两个 properties 文件均已 gitignore，不会提交到仓库；模板见 secrets.properties.example
+val secretProperties = Properties()
+val secretFile = rootProject.file("secrets.properties")
+if (secretFile.exists()) secretFile.inputStream().use { secretProperties.load(it) }
+
+val localProperties = Properties()
+val localFile = rootProject.file("local.properties")
+if (localFile.exists()) localFile.inputStream().use { localProperties.load(it) }
+
+val deepseekApiKey: String = secretProperties.getProperty("DEEPSEEK_API_KEY")
+    ?.takeIf { it.isNotBlank() }
+    ?: localProperties.getProperty("DEEPSEEK_API_KEY")?.takeIf { it.isNotBlank() }
+    ?: (System.getenv("DEEPSEEK_API_KEY") ?: "")
 
 android {
     namespace = "com.example.lifehelper"

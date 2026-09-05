@@ -236,7 +236,7 @@ private fun FilterRow(filter: GoalFilter, onFilter: (GoalFilter) -> Unit) {
 private fun GoalCard(
     goal: Goal,
     now: Long,
-    onToggle: (Goal) -> Unit,
+    onToggle: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
