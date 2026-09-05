@@ -1,0 +1,127 @@
+<resources>
+    <string name="app_name">Life Helper</string>
+    <string name="app_name_english">Life Helper</string>
+
+    <string name="nav_goal">Goals</string>
+    <string name="nav_course">Courses</string>
+    <string name="nav_transaction">Ledger</string>
+    <string name="nav_translate">Translate</string>
+    <string name="nav_profile">Me</string>
+
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_add">Add</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="action_clear_examples">Clear sample data</string>
+    <string name="action_export">Export backup</string>
+    <string name="action_import">Import restore</string>
+    <string name="action_export_csv">Export CSV</string>
+    <string name="confirm_delete_title">Confirm delete</string>
+    <string name="confirm_delete_message">Delete this record? This cannot be undone.</string>
+    <string name="confirm_clear_all_title">Clear all data</string>
+    <string name="confirm_clear_all_message">This will delete all data and cannot be undone. Continue?</string>
+    <string name="empty_hint">No data yet, tap + to add</string>
+    <string name="loading">Loading…</string>
+
+    <string name="goal_title">Learning Goals</string>
+    <string name="goal_today_focus">Today\'s Focus</string>
+    <string name="goal_add">New Goal</string>
+    <string name="goal_edit">Edit Goal</string>
+    <string name="goal_field_title">Title</string>
+    <string name="goal_field_desc">Description</string>
+    <string name="goal_field_deadline">Deadline</string>
+    <string name="goal_field_progress">Progress</string>
+    <string name="goal_field_priority">Priority</string>
+    <string name="goal_status_all">All</string>
+    <string name="goal_status_ongoing">Ongoing</string>
+    <string name="goal_status_done">Done</string>
+    <string name="goal_status_expired">Expired</string>
+    <string name="goal_mark_done">Mark done</string>
+    <string name="goal_priority_low">Low</string>
+    <string name="goal_priority_medium">Medium</string>
+    <string name="goal_priority_high">High</string>
+    <string name="goal_overdue">Overdue</string>
+
+    <string name="course_title">Timetable</string>
+    <string name="course_add">Add Course</string>
+    <string name="course_edit">Edit Course</string>
+    <string name="course_field_name">Course name</string>
+    <string name="course_field_location">Location</string>
+    <string name="course_field_teacher">Teacher</string>
+    <string name="course_field_day">Day</string>
+    <string name="course_field_start">Start time</string>
+    <string name="course_field_end">End time</string>
+    <string name="course_field_weeks">Weeks</string>
+    <string name="course_field_remind">Remind before (min)</string>
+    <string name="course_conflict">Time conflict with another course!</string>
+    <string name="course_week_all">Weekly</string>
+    <string name="course_week_odd">Odd weeks</string>
+    <string name="course_week_even">Even weeks</string>
+    <string name="day_1">Mon</string>
+    <string name="day_2">Tue</string>
+    <string name="day_3">Wed</string>
+    <string name="day_4">Thu</string>
+    <string name="day_5">Fri</string>
+    <string name="day_6">Sat</string>
+    <string name="day_7">Sun</string>
+
+    <string name="transaction_title">Ledger</string>
+    <string name="transaction_add">Add Record</string>
+    <string name="transaction_edit">Edit Record</string>
+    <string name="transaction_type">Type</string>
+    <string name="transaction_income">Income</string>
+    <string name="transaction_expense">Expense</string>
+    <string name="transaction_amount">Amount</string>
+    <string name="transaction_category">Category</string>
+    <string name="transaction_date">Date</string>
+    <string name="transaction_note">Note</string>
+    <string name="transaction_month_summary">Monthly Summary</string>
+    <string name="transaction_budget">Monthly budget</string>
+    <string name="transaction_over_budget">Over monthly budget!</string>
+
+    <string name="translate_title">Translate</string>
+    <string name="translate_source">Source</string>
+    <string name="translate_target">Target</string>
+    <string name="translate_input_hint">Enter text to translate</string>
+    <string name="translate_button">Translate</string>
+    <string name="translate_result">Result</string>
+    <string name="translate_history">History</string>
+    <string name="translate_swap">Swap languages</string>
+    <string name="translate_error">Translation failed, check network</string>
+
+    <string name="profile_title">Me</string>
+    <string name="profile_nickname">Nickname</string>
+    <string name="profile_signature">Signature</string>
+    <string name="profile_avatar">Avatar</string>
+    <string name="profile_settings">Settings</string>
+    <string name="profile_notification">Notifications</string>
+    <string name="profile_theme">Theme</string>
+    <string name="profile_language">Language</string>
+    <string name="profile_backup">Backup &amp; Restore</string>
+    <string name="profile_about">About</string>
+    <string name="profile_clear_all">Clear all data</string>
+    <string name="profile_version">Version</string>
+    <string name="profile_version_value">1.0.0</string>
+    <string name="profile_repo">Repository</string>
+    <string name="profile_repo_url">https://github.com/yourname/lifehelper</string>
+    <string name="profile_license">Licensed under the MIT License</string>
+    <string name="profile_theme_light">Light</string>
+    <string name="profile_theme_dark">Dark</string>
+    <string name="profile_theme_system">System</string>
+    <string name="profile_language_zh">中文</string>
+    <string name="profile_language_en">English</string>
+    <string name="profile_edit_profile">Edit profile</string>
+
+    <string name="backup_success">Backup successful</string>
+    <string name="backup_failed">Backup failed</string>
+    <string name="restore_success">Restore successful</string>
+    <string name="restore_failed">Restore failed, check file format</string>
+
+    <string name="notif_channel_course">Course reminders</string>
+    <string name="notif_channel_goal">Goal reminders</string>
+    <string name="notif_course_title">Course reminder</string>
+    <string name="notif_course_body">%1$s starts at %2$s</string>
+    <string name="notif_goal_title">Goal reminder</string>
+</resources>

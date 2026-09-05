@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- 排除数据库备份（数据通过应用内 JSON 备份功能导出） -->
+    <exclude domain="database" path="lifehelper.db" />
+</full-backup-content>

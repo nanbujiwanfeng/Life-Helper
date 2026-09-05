@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#1565C0</color>
+    <color name="primary_dark">#0D47A1</color>
+    <color name="primary_light">#42A5F5</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="secondary">#2E7D32</color>
+    <color name="accent">#FF7043</color>
+    <color name="background">#F5F7FA</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="income">#2E7D32</color>
+    <color name="expense">#D32F2F</color>
+    <color name="ic_launcher_background">#1565C0</color>
+</resources>
