@@ -22,6 +22,15 @@ val deepseekApiKey: String = secretProperties.getProperty("DEEPSEEK_API_KEY")
     ?: localProperties.getProperty("DEEPSEEK_API_KEY")?.takeIf { it.isNotBlank() }
     ?: (System.getenv("DEEPSEEK_API_KEY") ?: "")
 
+// release 签名配置（keystore.properties 已 gitignore，模板见 keystore.properties.example）
+val keystoreProperties = Properties()
+val keystoreFile = rootProject.file("keystore.properties")
+if (keystoreFile.exists()) keystoreFile.inputStream().use { keystoreProperties.load(it) }
+val ksPath = keystoreProperties.getProperty("KEYSTORE_PATH")
+val ksStorePassword = keystoreProperties.getProperty("KEYSTORE_PASSWORD", "")
+val ksKeyAlias = keystoreProperties.getProperty("KEY_ALIAS", "")
+val ksKeyPassword = keystoreProperties.getProperty("KEY_PASSWORD", "")
+
 android {
     namespace = "com.example.lifehelper"
     compileSdk = 34
@@ -42,6 +51,17 @@ android {
         buildConfigField("String", "DEEPSEEK_API_KEY", "\"$deepseekApiKey\"")
     }
 
+    signingConfigs {
+        create("release") {
+            if (ksPath != null) {
+                storeFile = rootProject.file(ksPath)
+                storePassword = ksStorePassword
+                keyAlias = ksKeyAlias
+                keyPassword = ksKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -49,6 +69,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            if (ksPath != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 

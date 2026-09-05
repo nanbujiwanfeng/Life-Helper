@@ -9,4 +9,6 @@
 .cxx
 local.properties
 secrets.properties
+keystore.properties
+app/keystore/
 app/build

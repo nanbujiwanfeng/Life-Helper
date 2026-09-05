@@ -32,10 +32,9 @@
 
 ### 环境要求
 
-- Android Studio（建议最新稳定版，如 Hedgehog 2023.1.1 及以上）
-- JDK 17
+- Android Studio（建议最新稳定版）
+- JDK 17+（本项目已在 JDK 21 下编译通过）
 - Android SDK Platform 34
-- Gradle 8.9（首次打开 Android Studio 会自动下载）
 
 ### 步骤
 
@@ -44,16 +43,36 @@
 3. 连接设备或启动模拟器（Android 7.0+）。
 4. 点击 **Run ▶** 编译并安装。
 
-也可以在命令行构建 APK：
+也可以在命令行构建 APK（Gradle Wrapper 已内置；`gradle-wrapper.properties` 使用腾讯镜像加速下载）：
 
 ```bash
 # 首次需先配置 local.properties（指向你的 Android SDK）
-# 例如 Windows：sdk.dir=C\:\\Users\\<you>\\AppData\\Local\\Android\\Sdk
-./gradlew assembleDebug
-# 产物位于 app/build/outputs/apk/debug/app-debug.apk
+# 例如 Windows：sdk.dir=C:/Android
+./gradlew assembleDebug      # 调试包 app-debug.apk
+./gradlew assembleRelease    # 正式包 app-release.apk（需先配置签名，见下）
 ```
 
-> 若项目目录下没有 `gradlew`（未提交 wrapper jar），直接以 Android Studio 打开即可；或执行 `gradle wrapper --gradle-version 8.9` 生成。
+> Gradle Wrapper（`gradlew` / `gradle-wrapper.jar`）已提交到仓库，clone 后即可直接命令行构建。
+
+## Release 签名
+
+正式包（release）需要签名才能安装/上架。密钥库与密码均为本地文件，**不会提交到仓库**。
+
+1. 生成密钥库（如已有可跳过）：
+   ```bash
+   keytool -genkeypair -v -keystore app/keystore/release.keystore \
+     -alias lifehelper -keyalg RSA -keysize 2048 -validity 10000
+   ```
+2. 复制模板并填入密码：
+   ```bash
+   cp keystore.properties.example keystore.properties
+   # 编辑 keystore.properties，填入 KEYSTORE_PASSWORD / KEY_PASSWORD
+   ```
+3. 构建：`./gradlew assembleRelease`
+
+产物：`app/build/outputs/apk/release/app-release.apk`
+
+> ⚠️ 请妥善保管密钥库（`app/keystore/release.keystore`）和密码——丢失后无法对已上架的应用发布更新。
 
 ---
 
