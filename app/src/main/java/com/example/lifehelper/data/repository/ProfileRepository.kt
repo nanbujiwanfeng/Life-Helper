@@ -39,6 +39,10 @@ class ProfileRepository(context: Context) {
     fun getMonthlyBudget(): Double = prefs.getFloat(KEY_BUDGET, 0f).toDouble()
     fun setMonthlyBudget(value: Double) = prefs.edit().putFloat(KEY_BUDGET, value.toFloat()).apply()
 
+    // 当前教学周（第几周，1 起）
+    fun getCurrentWeek(): Int = prefs.getInt(KEY_WEEK, 1)
+    fun setCurrentWeek(value: Int) = prefs.edit().putInt(KEY_WEEK, value).apply()
+
     fun clearAll() = prefs.edit().clear().apply()
 
     companion object {
@@ -50,5 +54,6 @@ class ProfileRepository(context: Context) {
         private const val KEY_LANGUAGE = "language"
         private const val KEY_NOTIFICATION = "notification_enabled"
         private const val KEY_BUDGET = "monthly_budget"
+        private const val KEY_WEEK = "current_week"
     }
 }

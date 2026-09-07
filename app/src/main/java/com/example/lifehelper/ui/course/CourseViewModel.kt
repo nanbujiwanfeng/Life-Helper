@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.lifehelper.LifeHelperApp
 import com.example.lifehelper.data.db.entity.Course
 import com.example.lifehelper.data.repository.CourseRepository
+import com.example.lifehelper.data.repository.ProfileRepository
 import com.example.lifehelper.work.ReminderScheduler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,19 +21,25 @@ import java.util.Calendar
 
 class CourseViewModel(
     private val repository: CourseRepository,
+    private val profileRepository: ProfileRepository,
     private val appContext: Context
 ) : ViewModel() {
 
     val courses: StateFlow<List<Course>> = repository.getAllCourses()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    /** 当前选中的星期（1=周一 ... 7=周日），默认今天 */
-    private val _selectedDay = MutableStateFlow(todayDayOfWeek())
-    val selectedDay: StateFlow<Int> = _selectedDay.asStateFlow()
+    /** 当前教学周（第几周，1 起），默认第 1 周 */
+    private val _currentWeek = MutableStateFlow(profileRepository.getCurrentWeek())
+    val currentWeek: StateFlow<Int> = _currentWeek.asStateFlow()
 
-    fun setSelectedDay(day: Int) {
-        _selectedDay.value = day
+    fun setCurrentWeek(week: Int) {
+        val w = week.coerceIn(1, 30)
+        _currentWeek.value = w
+        profileRepository.setCurrentWeek(w)
     }
+
+    fun previousWeek() = setCurrentWeek(_currentWeek.value - 1)
+    fun nextWeek() = setCurrentWeek(_currentWeek.value + 1)
 
     /** 添加课程，返回是否成功（false 表示存在时间冲突） */
     fun addCourse(course: Course, onResult: (Boolean) -> Unit) = viewModelScope.launch {
@@ -83,7 +90,7 @@ class CourseViewModel(
         val Factory = viewModelFactory {
             initializer {
                 val app = this[APPLICATION_KEY] as LifeHelperApp
-                CourseViewModel(app.container.courseRepository, app)
+                CourseViewModel(app.container.courseRepository, app.container.profileRepository, app)
             }
         }
     }

@@ -65,6 +65,10 @@
     <string name="course_week_all">每周</string>
     <string name="course_week_odd">单周</string>
     <string name="course_week_even">双周</string>
+    <string name="course_current_week">第 %1$d 周</string>
+    <string name="course_week_prev">上一周</string>
+    <string name="course_week_next">下一周</string>
+    <string name="course_week_empty">本周无课程</string>
     <string name="day_1">周一</string>
     <string name="day_2">周二</string>
     <string name="day_3">周三</string>

@@ -29,6 +29,13 @@ data class Course(
 
     fun endMinutes(): Int = timeToMinutes(endTime)
 
+    /** 判断课程在当前教学周（第 week 周）是否上课（单周/双周过滤） */
+    fun isActiveInWeek(week: Int): Boolean = when (weekPattern) {
+        "odd" -> week % 2 == 1
+        "even" -> week % 2 == 0
+        else -> true
+    }
+
     companion object {
         fun timeToMinutes(hhmm: String): Int {
             val parts = hhmm.split(":")

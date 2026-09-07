@@ -20,11 +20,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -76,6 +79,7 @@ private fun dayLabel(day: Int): String = stringResource(
 @Composable
 fun CourseScreen(viewModel: CourseViewModel = viewModel(factory = CourseViewModel.Factory)) {
     val courses by viewModel.courses.collectAsStateWithLifecycle()
+    val currentWeek by viewModel.currentWeek.collectAsStateWithLifecycle()
     var showDialog by remember { mutableStateOf(false) }
     var editingCourse by remember { mutableStateOf<Course?>(null) }
     var confirmDelete by remember { mutableStateOf<Course?>(null) }
@@ -102,13 +106,31 @@ fun CourseScreen(viewModel: CourseViewModel = viewModel(factory = CourseViewMode
                     )
                 }
             } else {
-                WeekTimetableGrid(
-                    courses = courses,
-                    onCourseClick = { course ->
-                        editingCourse = course
-                        showDialog = true
+                Column(modifier = Modifier.fillMaxSize()) {
+                    WeekSelector(
+                        currentWeek = currentWeek,
+                        onPrev = viewModel::previousWeek,
+                        onNext = viewModel::nextWeek
+                    )
+                    val visibleCourses = courses.filter { it.isActiveInWeek(currentWeek) }
+                    if (visibleCourses.isEmpty()) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text(
+                                text = stringResource(R.string.course_week_empty),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            )
+                        }
+                    } else {
+                        WeekTimetableGrid(
+                            courses = visibleCourses,
+                            onCourseClick = { course ->
+                                editingCourse = course
+                                showDialog = true
+                            }
+                        )
                     }
-                )
+                }
             }
         }
     }
@@ -161,6 +183,35 @@ fun CourseScreen(viewModel: CourseViewModel = viewModel(factory = CourseViewMode
                 TextButton(onClick = { confirmDelete = null }) { Text(stringResource(R.string.action_cancel)) }
             }
         )
+    }
+}
+
+/**
+ * 教学周切换器：上一周 / 第 N 周 / 下一周
+ */
+@Composable
+private fun WeekSelector(
+    currentWeek: Int,
+    onPrev: () -> Unit,
+    onNext: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        IconButton(onClick = onPrev) {
+            Icon(Icons.Filled.ChevronLeft, contentDescription = stringResource(R.string.course_week_prev))
+        }
+        Text(
+            text = stringResource(R.string.course_current_week, currentWeek),
+            style = MaterialTheme.typography.titleMedium
+        )
+        IconButton(onClick = onNext) {
+            Icon(Icons.Filled.ChevronRight, contentDescription = stringResource(R.string.course_week_next))
+        }
     }
 }
 
