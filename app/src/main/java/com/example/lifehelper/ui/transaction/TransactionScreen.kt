@@ -74,6 +74,8 @@ fun TransactionScreen(viewModel: TransactionViewModel = viewModel(factory = Tran
     val transactions by viewModel.transactions.collectAsStateWithLifecycle()
     val month by viewModel.month.collectAsStateWithLifecycle()
     val budget by viewModel.budget.collectAsStateWithLifecycle()
+    val customExpense by viewModel.customExpense.collectAsStateWithLifecycle()
+    val customIncome by viewModel.customIncome.collectAsStateWithLifecycle()
     var showDialog by remember { mutableStateOf(false) }
     var editing by remember { mutableStateOf<Transaction?>(null) }
     var confirmDelete by remember { mutableStateOf<Transaction?>(null) }
@@ -148,6 +150,9 @@ fun TransactionScreen(viewModel: TransactionViewModel = viewModel(factory = Tran
     if (showDialog) {
         TransactionEditDialog(
             transaction = editing,
+            customExpense = customExpense,
+            customIncome = customIncome,
+            onAddCategory = viewModel::addCategory,
             onDismiss = { showDialog = false },
             onSave = { t ->
                 if (editing == null) viewModel.addTransaction(t) else viewModel.updateTransaction(t)
@@ -347,6 +352,9 @@ private fun TransactionRow(
 @Composable
 private fun TransactionEditDialog(
     transaction: Transaction?,
+    customExpense: List<String>,
+    customIncome: List<String>,
+    onAddCategory: (String, String) -> Unit,
     onDismiss: () -> Unit,
     onSave: (Transaction) -> Unit
 ) {
@@ -356,8 +364,11 @@ private fun TransactionEditDialog(
     var date by remember { mutableStateOf(transaction?.date ?: System.currentTimeMillis()) }
     var note by remember { mutableStateOf(transaction?.note ?: "") }
     var showDatePicker by remember { mutableStateOf(false) }
+    var showAddCategory by remember { mutableStateOf(false) }
+    var newCategoryName by remember { mutableStateOf("") }
 
-    val categories = TransactionCategories.categoriesFor(type)
+    val custom = if (type == Transaction.TYPE_INCOME) customIncome else customExpense
+    val categories = TransactionCategories.categoriesFor(type) + custom
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -404,6 +415,11 @@ private fun TransactionEditDialog(
                             label = { Text(c) }
                         )
                     }
+                    FilterChip(
+                        selected = false,
+                        onClick = { showAddCategory = true },
+                        label = { Text("+") }
+                    )
                 }
                 Spacer(Modifier.height(8.dp))
                 TextButton(onClick = { showDatePicker = true }) {
@@ -442,6 +458,39 @@ private fun TransactionEditDialog(
             TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
         }
     )
+
+    if (showAddCategory) {
+        AlertDialog(
+            onDismissRequest = { showAddCategory = false },
+            title = { Text(stringResource(R.string.transaction_add_category)) },
+            text = {
+                OutlinedTextField(
+                    value = newCategoryName,
+                    onValueChange = { newCategoryName = it },
+                    label = { Text(stringResource(R.string.transaction_category_name)) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val name = newCategoryName.trim()
+                        if (name.isNotEmpty()) {
+                            onAddCategory(type, name)
+                            category = name
+                        }
+                        newCategoryName = ""
+                        showAddCategory = false
+                    },
+                    enabled = newCategoryName.isNotBlank()
+                ) { Text(stringResource(R.string.action_save)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showAddCategory = false }) { Text(stringResource(R.string.action_cancel)) }
+            }
+        )
+    }
 
     if (showDatePicker) {
         val state = rememberDatePickerState(initialSelectedDateMillis = date)

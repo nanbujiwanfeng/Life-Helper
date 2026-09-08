@@ -38,6 +38,24 @@ class TransactionViewModel(
     private val _budget = MutableStateFlow(profileRepository.getMonthlyBudget())
     val budget: StateFlow<Double> = _budget.asStateFlow()
 
+    /** 自定义支出分类 */
+    private val _customExpense = MutableStateFlow(profileRepository.getCustomCategories(Transaction.TYPE_EXPENSE))
+    val customExpense: StateFlow<List<String>> = _customExpense.asStateFlow()
+
+    /** 自定义收入分类 */
+    private val _customIncome = MutableStateFlow(profileRepository.getCustomCategories(Transaction.TYPE_INCOME))
+    val customIncome: StateFlow<List<String>> = _customIncome.asStateFlow()
+
+    /** 新增自定义分类 */
+    fun addCategory(type: String, name: String) {
+        profileRepository.addCustomCategory(type, name)
+        if (type == Transaction.TYPE_INCOME) {
+            _customIncome.value = profileRepository.getCustomCategories(Transaction.TYPE_INCOME)
+        } else {
+            _customExpense.value = profileRepository.getCustomCategories(Transaction.TYPE_EXPENSE)
+        }
+    }
+
     fun previousMonth() = _month.value.let { start ->
         val c = java.util.Calendar.getInstance().apply { timeInMillis = start; add(java.util.Calendar.MONTH, -1) }
         _month.value = Format.monthStart(c.timeInMillis)

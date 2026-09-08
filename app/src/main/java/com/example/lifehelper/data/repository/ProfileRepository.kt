@@ -2,6 +2,7 @@ package com.example.lifehelper.data.repository
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.example.lifehelper.data.db.entity.Transaction
 
 /**
  * 用户资料与设置仓库，基于 SharedPreferences 存储
@@ -43,6 +44,26 @@ class ProfileRepository(context: Context) {
     fun getCurrentWeek(): Int = prefs.getInt(KEY_WEEK, 1)
     fun setCurrentWeek(value: Int) = prefs.edit().putInt(KEY_WEEK, value).apply()
 
+    // 自定义记账分类（按类型分别存为逗号分隔字符串）
+    fun getCustomCategories(type: String): List<String> {
+        val key = if (type == Transaction.TYPE_INCOME) KEY_CUSTOM_INCOME else KEY_CUSTOM_EXPENSE
+        return prefs.getString(key, "")
+            ?.split(",")
+            ?.map { it.trim() }
+            ?.filter { it.isNotEmpty() }
+            ?: emptyList()
+    }
+
+    fun addCustomCategory(type: String, name: String) {
+        val trimmed = name.trim()
+        if (trimmed.isEmpty()) return
+        val key = if (type == Transaction.TYPE_INCOME) KEY_CUSTOM_INCOME else KEY_CUSTOM_EXPENSE
+        val current = getCustomCategories(type)
+        if (trimmed !in current) {
+            prefs.edit().putString(key, (current + trimmed).joinToString(",")).apply()
+        }
+    }
+
     fun clearAll() = prefs.edit().clear().apply()
 
     companion object {
@@ -55,5 +76,7 @@ class ProfileRepository(context: Context) {
         private const val KEY_NOTIFICATION = "notification_enabled"
         private const val KEY_BUDGET = "monthly_budget"
         private const val KEY_WEEK = "current_week"
+        private const val KEY_CUSTOM_INCOME = "custom_income_categories"
+        private const val KEY_CUSTOM_EXPENSE = "custom_expense_categories"
     }
 }
