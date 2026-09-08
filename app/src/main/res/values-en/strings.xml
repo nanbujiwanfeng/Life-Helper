@@ -83,6 +83,8 @@
     <string name="transaction_note">Note</string>
     <string name="transaction_add_category">Add category</string>
     <string name="transaction_category_name">Category name</string>
+    <string name="transaction_search">Search category or note</string>
+    <string name="transaction_search_empty">No matching results</string>
     <string name="transaction_month_summary">Monthly Summary</string>
     <string name="transaction_budget">Monthly budget</string>
     <string name="transaction_over_budget">Over monthly budget!</string>

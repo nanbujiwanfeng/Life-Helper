@@ -22,8 +22,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -80,6 +82,7 @@ fun TransactionScreen(viewModel: TransactionViewModel = viewModel(factory = Tran
     var editing by remember { mutableStateOf<Transaction?>(null) }
     var confirmDelete by remember { mutableStateOf<Transaction?>(null) }
     var showBudgetDialog by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
 
     val totalIncome = transactions.filter { it.type == Transaction.TYPE_INCOME }.sumOf { it.amount }
     val totalExpense = transactions.filter { it.type == Transaction.TYPE_EXPENSE }.sumOf { it.amount }
@@ -91,6 +94,16 @@ fun TransactionScreen(viewModel: TransactionViewModel = viewModel(factory = Tran
         .groupBy { it.category }
         .map { (k, v) -> k to v.sumOf { it.amount } }
         .sortedByDescending { it.second }
+
+    // 搜索过滤：按分类或备注匹配（忽略大小写）
+    val filteredTransactions = if (searchQuery.isBlank()) {
+        transactions
+    } else {
+        transactions.filter {
+            it.category.contains(searchQuery, ignoreCase = true) ||
+                it.note.contains(searchQuery, ignoreCase = true)
+        }
+    }
 
     Scaffold(
         topBar = { TopAppBar(title = { Text(stringResource(R.string.transaction_title)) }) },
@@ -126,6 +139,24 @@ fun TransactionScreen(viewModel: TransactionViewModel = viewModel(factory = Tran
                 }
             }
 
+            item {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    placeholder = { Text(stringResource(R.string.transaction_search)) },
+                    leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = { searchQuery = "" }) {
+                                Icon(Icons.Filled.Clear, contentDescription = stringResource(R.string.action_cancel))
+                            }
+                        }
+                    },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
             if (transactions.isEmpty()) {
                 item {
                     Box(modifier = Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
@@ -135,8 +166,17 @@ fun TransactionScreen(viewModel: TransactionViewModel = viewModel(factory = Tran
                         )
                     }
                 }
+            } else if (filteredTransactions.isEmpty()) {
+                item {
+                    Box(modifier = Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = stringResource(R.string.transaction_search_empty),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
+                    }
+                }
             } else {
-                items(transactions, key = { it.id }) { t ->
+                items(filteredTransactions, key = { it.id }) { t ->
                     TransactionRow(
                         transaction = t,
                         onEdit = { editing = t; showDialog = true },

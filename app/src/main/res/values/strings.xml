@@ -90,6 +90,8 @@
     <string name="transaction_note">备注</string>
     <string name="transaction_add_category">添加分类</string>
     <string name="transaction_category_name">分类名称</string>
+    <string name="transaction_search">搜索分类或备注</string>
+    <string name="transaction_search_empty">无匹配结果</string>
     <string name="transaction_month_summary">月度汇总</string>
     <string name="transaction_budget">月预算</string>
     <string name="transaction_over_budget">已超出本月预算！</string>
