@@ -85,6 +85,7 @@
     <string name="transaction_category_name">Category name</string>
     <string name="transaction_search">Search category or note</string>
     <string name="transaction_search_empty">No matching results</string>
+    <string name="transaction_trend">6-month trend</string>
     <string name="transaction_month_summary">Monthly Summary</string>
     <string name="transaction_budget">Monthly budget</string>
     <string name="transaction_over_budget">Over monthly budget!</string>

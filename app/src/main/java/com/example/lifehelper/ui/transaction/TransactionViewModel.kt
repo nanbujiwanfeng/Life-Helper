@@ -15,8 +15,17 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.Calendar
+
+/** 单月收支汇总（用于趋势图） */
+data class MonthlyTrend(
+    val label: String,
+    val income: Double,
+    val expense: Double
+)
 
 class TransactionViewModel(
     private val repository: TransactionRepository,
@@ -37,6 +46,11 @@ class TransactionViewModel(
     /** 月预算（0 表示未设置） */
     private val _budget = MutableStateFlow(profileRepository.getMonthlyBudget())
     val budget: StateFlow<Double> = _budget.asStateFlow()
+
+    /** 近 6 个月收支趋势 */
+    val trendData: StateFlow<List<MonthlyTrend>> = repository.getAllTransactions()
+        .map { aggregateByMonth(it) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     /** 自定义支出分类 */
     private val _customExpense = MutableStateFlow(profileRepository.getCustomCategories(Transaction.TYPE_EXPENSE))
@@ -81,6 +95,31 @@ class TransactionViewModel(
 
     fun deleteTransaction(transaction: Transaction) = viewModelScope.launch {
         repository.deleteTransaction(transaction)
+    }
+
+    /** 将账目按最近 6 个月聚合为收入/支出汇总 */
+    private fun aggregateByMonth(list: List<Transaction>): List<MonthlyTrend> {
+        val result = ArrayList<MonthlyTrend>(6)
+        for (i in 5 downTo 0) {
+            val c = Calendar.getInstance().apply {
+                add(Calendar.MONTH, -i)
+                set(Calendar.DAY_OF_MONTH, 1)
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            val start = c.timeInMillis
+            val end = Format.nextMonthStart(start)
+            val income = list.filter {
+                it.type == Transaction.TYPE_INCOME && it.date >= start && it.date < end
+            }.sumOf { it.amount }
+            val expense = list.filter {
+                it.type == Transaction.TYPE_EXPENSE && it.date >= start && it.date < end
+            }.sumOf { it.amount }
+            result.add(MonthlyTrend("${c.get(Calendar.MONTH) + 1}月", income, expense))
+        }
+        return result
     }
 
     companion object {

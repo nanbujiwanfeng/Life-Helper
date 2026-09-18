@@ -78,6 +78,7 @@ fun TransactionScreen(viewModel: TransactionViewModel = viewModel(factory = Tran
     val budget by viewModel.budget.collectAsStateWithLifecycle()
     val customExpense by viewModel.customExpense.collectAsStateWithLifecycle()
     val customIncome by viewModel.customIncome.collectAsStateWithLifecycle()
+    val trendData by viewModel.trendData.collectAsStateWithLifecycle()
     var showDialog by remember { mutableStateOf(false) }
     var editing by remember { mutableStateOf<Transaction?>(null) }
     var confirmDelete by remember { mutableStateOf<Transaction?>(null) }
@@ -131,6 +132,12 @@ fun TransactionScreen(viewModel: TransactionViewModel = viewModel(factory = Tran
                     budget = budget,
                     onBudgetClick = { showBudgetDialog = true }
                 )
+            }
+
+            if (trendData.any { it.income > 0 || it.expense > 0 }) {
+                item {
+                    TrendCard(data = trendData)
+                }
             }
 
             if (categoryStats.isNotEmpty()) {
@@ -383,6 +390,79 @@ private fun TransactionRow(
             }
             IconButton(onClick = onDelete) {
                 Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.action_delete))
+            }
+        }
+    }
+}
+
+@Composable
+private fun TrendCard(data: List<MonthlyTrend>) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(stringResource(R.string.transaction_trend), style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(12.dp))
+            TrendChart(data = data)
+            Spacer(Modifier.height(8.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(modifier = Modifier.size(10.dp).background(IncomeGreen, CircleShape))
+                    Spacer(Modifier.size(4.dp))
+                    Text(stringResource(R.string.transaction_income), style = MaterialTheme.typography.labelMedium)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(modifier = Modifier.size(10.dp).background(ExpenseRed, CircleShape))
+                    Spacer(Modifier.size(4.dp))
+                    Text(stringResource(R.string.transaction_expense), style = MaterialTheme.typography.labelMedium)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TrendChart(data: List<MonthlyTrend>) {
+    val maxValue = data.maxOfOrNull { maxOf(it.income, it.expense) }?.takeIf { it > 0 } ?: 1.0
+    val labelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+
+    Column {
+        Canvas(modifier = Modifier.fillMaxWidth().height(160.dp)) {
+            val inset = 10.dp.toPx()
+            val chartWidth = size.width - inset * 2
+            val chartHeight = size.height
+            val stepX = if (data.size > 1) chartWidth / (data.size - 1) else 0f
+            fun xFor(i: Int): Float = inset + i * stepX
+            fun yFor(v: Double): Float = chartHeight - (v / maxValue).toFloat() * chartHeight
+
+            // 收入线（绿）
+            for (i in 1 until data.size) {
+                drawLine(
+                    IncomeGreen,
+                    Offset(xFor(i - 1), yFor(data[i - 1].income)),
+                    Offset(xFor(i), yFor(data[i].income)),
+                    strokeWidth = 3f
+                )
+            }
+            // 支出线（红）
+            for (i in 1 until data.size) {
+                drawLine(
+                    ExpenseRed,
+                    Offset(xFor(i - 1), yFor(data[i - 1].expense)),
+                    Offset(xFor(i), yFor(data[i].expense)),
+                    strokeWidth = 3f
+                )
+            }
+            // 数据点
+            data.forEachIndexed { i, item ->
+                drawCircle(IncomeGreen, radius = 4f, center = Offset(xFor(i), yFor(item.income)))
+                drawCircle(ExpenseRed, radius = 4f, center = Offset(xFor(i), yFor(item.expense)))
+            }
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            data.forEach { item ->
+                Text(item.label, style = MaterialTheme.typography.labelSmall, color = labelColor)
             }
         }
     }
