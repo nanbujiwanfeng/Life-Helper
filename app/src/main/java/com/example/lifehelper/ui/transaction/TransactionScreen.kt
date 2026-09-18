@@ -40,6 +40,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -490,6 +491,13 @@ private fun TransactionEditDialog(
     val custom = if (type == Transaction.TYPE_INCOME) customIncome else customExpense
     val categories = TransactionCategories.categoriesFor(type) + custom
 
+    fun quickAdd(value: Double) {
+        val current = amount.toDoubleOrNull() ?: 0.0
+        val result = current + value
+        amount = if (result == result.toLong().toDouble()) result.toLong().toString()
+        else "%.2f".format(result)
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(if (transaction == null) R.string.transaction_add else R.string.transaction_edit)) },
@@ -522,6 +530,17 @@ private fun TransactionEditDialog(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth()
                 )
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    listOf(10.0, 20.0, 50.0, 100.0).forEach { v ->
+                        SuggestionChip(
+                            onClick = { quickAdd(v) },
+                            label = { Text("+${v.toInt()}") }
+                        )
+                    }
+                }
                 Spacer(Modifier.height(8.dp))
                 Text(stringResource(R.string.transaction_category), style = MaterialTheme.typography.labelLarge)
                 FlowRow(

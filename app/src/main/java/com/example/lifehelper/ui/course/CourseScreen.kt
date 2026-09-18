@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -33,7 +34,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -333,7 +336,7 @@ private fun WeekTimetableGrid(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun CourseEditDialog(
     course: Course?,
@@ -350,6 +353,8 @@ private fun CourseEditDialog(
     var endTime by remember { mutableStateOf(course?.endTime ?: "09:40") }
     var weekPattern by remember { mutableStateOf(course?.weekPattern ?: "all") }
     var remindMinutes by remember { mutableStateOf((course?.remindMinutes ?: 15).toString()) }
+    var showStartPicker by remember { mutableStateOf(false) }
+    var showEndPicker by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -376,13 +381,25 @@ private fun CourseEditDialog(
                 Spacer(Modifier.height(8.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(
-                        value = startTime, onValueChange = { startTime = it },
+                        value = startTime, onValueChange = {},
+                        readOnly = true,
                         label = { Text(stringResource(R.string.course_field_start)) },
+                        trailingIcon = {
+                            IconButton(onClick = { showStartPicker = true }) {
+                                Icon(Icons.Filled.Schedule, contentDescription = null)
+                            }
+                        },
                         singleLine = true, modifier = Modifier.weight(1f)
                     )
                     OutlinedTextField(
-                        value = endTime, onValueChange = { endTime = it },
+                        value = endTime, onValueChange = {},
+                        readOnly = true,
                         label = { Text(stringResource(R.string.course_field_end)) },
+                        trailingIcon = {
+                            IconButton(onClick = { showEndPicker = true }) {
+                                Icon(Icons.Filled.Schedule, contentDescription = null)
+                            }
+                        },
                         singleLine = true, modifier = Modifier.weight(1f)
                     )
                 }
@@ -462,4 +479,50 @@ private fun CourseEditDialog(
             TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
         }
     )
+
+    if (showStartPicker) {
+        val state = rememberTimePickerState(
+            initialHour = startTime.substringBefore(":").toIntOrNull() ?: 8,
+            initialMinute = startTime.substringAfter(":", "0").toIntOrNull() ?: 0,
+            is24Hour = true
+        )
+        AlertDialog(
+            onDismissRequest = { showStartPicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    startTime = "%02d:%02d".format(state.hour, state.minute)
+                    showStartPicker = false
+                }) { Text(stringResource(R.string.action_confirm)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showStartPicker = false }) { Text(stringResource(R.string.action_cancel)) }
+            },
+            text = {
+                TimePicker(state = state)
+            }
+        )
+    }
+
+    if (showEndPicker) {
+        val state = rememberTimePickerState(
+            initialHour = endTime.substringBefore(":").toIntOrNull() ?: 9,
+            initialMinute = endTime.substringAfter(":", "0").toIntOrNull() ?: 40,
+            is24Hour = true
+        )
+        AlertDialog(
+            onDismissRequest = { showEndPicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    endTime = "%02d:%02d".format(state.hour, state.minute)
+                    showEndPicker = false
+                }) { Text(stringResource(R.string.action_confirm)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showEndPicker = false }) { Text(stringResource(R.string.action_cancel)) }
+            },
+            text = {
+                TimePicker(state = state)
+            }
+        )
+    }
 }
